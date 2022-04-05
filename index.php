@@ -133,6 +133,7 @@ switch ($uri[1]){
 
         }
         else{
+
             $responseEcho = array('error'=>"cType digit error");
         }
 
