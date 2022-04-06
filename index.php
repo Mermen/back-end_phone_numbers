@@ -113,8 +113,8 @@ switch ($uri[1]){
         $userId = $userIdArray[0]['user_id'];
         $insertReviewQuery = pg_query($connect, "INSERT INTO reviews(user_id, phone_id,review_text,rating) VALUES (".$userId.",".$phoneId.", '".$rev[1]."', 0)");
         $insertReviewArray = pg_fetch_all($countQuery);
-
-        echo json_encode("done");
+        $responseEcho = array('done'=>"OK");
+        echo json_encode($responseEcho);
 
 
 
@@ -140,11 +140,11 @@ switch ($uri[1]){
                 $reviewsArray = pg_fetch_all($reviewsList);
                 $responseEcho[$i] = array('phone_number' => $phoneIdArray[$i]['phone_number'], 'reviews' => $reviewsArray);
             }
-            echo json_encode($responseEcho);
         }
         else{
             $responseEcho = array('error'=>"cType digit error");
         }
+        echo json_encode($responseEcho);
 
         break;
     }
