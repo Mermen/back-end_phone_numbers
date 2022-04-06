@@ -129,11 +129,20 @@ switch ($uri[1]){
         $number = ltrim($rev[0],"+");
         $database = new Database();
         $connect = $database->getConnection();
+        $responseEcho = [];
         if (ctype_digit($number)) {
-
+            $query = "SELECT phone_id,phone_number FROM phone_numbers WHERE phone_number::text LIKE '". $number ."%'";
+            $phoneIdList = pg_query($connect, $query);
+            $phoneIdArray = pg_fetch_all($phoneIdList);
+            for ($i = 0; $i < count($phoneIdArray); ++$i){
+                $query = "SELECT COUNT(*) FROM reviews INNER JOIN users USING (user_id) WHERE phone_id = ". $phoneIdArray[$i]['phone_id'];
+                $reviewsList = pg_query($connect, $query);
+                $reviewsArray = pg_fetch_all($reviewsList);
+                $responseEcho[$i] = array('phone_number' => $phoneIdArray[$i]['phone_number'], 'reviews' => $reviewsArray);
+            }
+            echo json_encode($responseEcho);
         }
         else{
-
             $responseEcho = array('error'=>"cType digit error");
         }
 
