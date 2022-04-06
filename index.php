@@ -148,6 +148,42 @@ switch ($uri[1]){
 
         break;
     }
+    case 'mark':{
+        $database = new Database();
+        $connect = $database->getConnection();
+        $responseEcho =[];
+        $mark = explode( '&', $uri[2] );
+        $deltaRating = 0;
+        $check = 0;
+        switch ($mark[1]){
+            case 'up':{
+                $deltaRating = 1;
+                $check=1;
+                break;
+            }
+            case 'down':{
+                $deltaRating = -1;
+                $check=1;
+                break;
+            }
+            default:{
+                $responseEcho = array('error'=>"change name error");
+                break;
+            }
+        }
+        $query = "SELECT COUNT(*) FROM users WHERE token = '". $mark[2]."'";
+        $userList = pg_query($connect, $query);
+        $userArray = pg_fetch_all($userList);
+
+        if ($check && count($userArray) && $mark[2] !== 'anonymous'){
+            $query = "UPDATE reviews SET rating = rating + ".$deltaRating. " WHERE review_id = ". $mark[0];
+            $updateList = pg_query($connect, $query);
+            $updateArray = pg_fetch_all($updateList);
+            $responseEcho = array('done'=>"OK");
+        }
+        echo json_encode($responseEcho);
+        break;
+    }
     default:{
         echo "error";
     }
